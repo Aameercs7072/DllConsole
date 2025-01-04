@@ -2,10 +2,12 @@
 using MathLibrary;  // Reference to the MathLibrary
 using System.Reflection;
 using ConsoleApp1.Models;
-using ClassLibrary1.Model;
+//using ClassLibrary1.Model
 using System.Collections.Generic;
 using MySqlX.XDevAPI.Common;
 using System.Xml.Linq;
+using System.Collections;
+using System.Reflection.PortableExecutable;
 
 namespace MathApp
 {
@@ -23,7 +25,7 @@ namespace MathApp
             {
                 var obj = Activator.CreateInstance(type);
 
-                string? more = "";
+
                 do
                 {
                     Console.WriteLine("Enter option");
@@ -130,9 +132,6 @@ namespace MathApp
                         {
                             id = Guid.Parse(guid);
 
-
-
-
                             var result = method.Invoke(obj, new Object[] { id });
                             if (result != null)
                             {
@@ -154,33 +153,108 @@ namespace MathApp
                             }
                         }
                     }
-                    //if (option == 4)
-                    //{
-                    //    Console.WriteLine("Getuser");
-                    //    var method = type.GetMethod("Getuser");
-                    //    var result = method.Invoke(obj, new object[] { });
-                    //    Console.WriteLine("Result",result);
+                    else if (option == 4)
+                    {
+                        Console.WriteLine("GetuserById");
 
-                    //    List<ConsoleApp1.Models.GetUser> users = result as List<ConsoleApp1.Models.GetUser>;
-                    //    Console.WriteLine("User",users);
-                    //    if (users.Count > 0)
-                    //        {
-                    //            foreach (var user in users)
-                    //            {
-                    //                Console.WriteLine($"{user.Id}  {user.Name}  {user.Email}");
-                    //            }
-                    //        }
-                    //        else
-                    //        {
-                    //            Console.WriteLine("User not found.");
-                    //        }
+                        var method = type.GetMethod("GetuserById");
 
-                    //}
-                    if (option == 4)
+                        if (method == null)
+                        {
+                            Console.WriteLine("Method 'Getuser' not found.");
+                            return;
+                        }
+                        Console.WriteLine("Id");
+                        string? guid = Console.ReadLine();
+                        Guid inputId;
+                        if (guid != null)
+                        {
+                            inputId = Guid.Parse(guid);
+                            var result = method.Invoke(obj, new Object[] { inputId });
+
+
+
+                            if (result == null)
+                            {
+                                Console.WriteLine("The result is null.");
+                                return;
+                            }
+                            else
+                            {
+                                GetUser? user = new GetUser();
+                                var idProperty = result.GetType().GetProperty("Id");
+                                if (idProperty != null)
+                                {
+                                    var value = idProperty.GetValue(result);
+                                    if (value != null)
+                                    {
+                                        user.Id = (Guid)value;
+                                        user.Name = Convert.ToString(result.GetType().GetProperty("Name")?.GetValue(result));
+                                        user.Email = Convert.ToString(result.GetType().GetProperty("Email")?.GetValue(result));
+
+                                        Console.WriteLine($"ID: {user.Id}");
+                                        Console.WriteLine($"Name: {user.Name}");
+                                        Console.WriteLine($"Email: {user.Email}");
+                                    }
+                                }
+                            }
+                            //else
+                            //{
+                            //    // Use reflection to get properties of the result
+                            //    var id = result.GetType().GetProperty("Id")?.GetValue(result);
+                            //    var name = result.GetType().GetProperty("Name")?.GetValue(result);
+                            //    var email = result.GetType().GetProperty("Email")?.GetValue(result);
+                            //       GetUser? userList = new GetUser();
+                            //    // Print the user details
+                            //    Console.WriteLine($"ID: {id}");
+                            //    Console.WriteLine($"Name: {name}");
+                            //    Console.WriteLine($"Email: {email}");
+                            //}
+
+                            //Console.WriteLine("The result Type: ",result.GetType);
+                            //if (result is GetUser user)
+                            //{
+                            //    Console.WriteLine($"ID: {user.Id}, Name: {user.Name}, Email: {user.Email}");
+                            //}
+                            //    if (result is IEnumerable user)
+                            //{
+                            //    GetUser? userList = new GetUser();
+
+                            //    var id = user.GetType().GetProperty("Id")?.GetValue(user);
+                            //    var name = user.GetType().GetProperty("Name")?.GetValue(user);
+                            //    var email = user.GetType().GetProperty("Email")?.GetValue(user);
+
+                            //    if (id!= null && user != null && name != null)
+                            //    {
+                            //        userList = new GetUser()
+                            //        {
+
+                            //            Id = (Guid)id,
+                            //            Name = Convert.ToString(name),
+                            //            Email = Convert.ToString(email)
+                            //        };
+                            //        Console.WriteLine($"ID: {userList.Id}, Name: {userList.Name}, Email:{userList.Email}");
+                            //    }
+                            //    else
+                            //    {
+                            //        Console.WriteLine("Failed to retrieve property values.");
+                            //    }
+
+
+                            //}
+                            //else
+                            //{
+                            //    Console.WriteLine("The result is not an IEnumerable.");
+                            //}
+
+                        }
+
+                    }
+
+                    else if (option == 5)
                     {
                         Console.WriteLine("Getuser");
 
-                        // Get the Getuser method dynamically
                         var method = type.GetMethod("Getuser");
 
                         if (method == null)
@@ -189,66 +263,61 @@ namespace MathApp
                             return;
                         }
 
-                        // Invoke the method to get the result
-                        //var result = method.Invoke(obj, new object< ClassLibrary1.Model.GetUser > [] { });
-                        List<ConsoleApp1.Models.GetUser> result = method.Invoke(obj, null);
+                        var result = method.Invoke(obj, null);
 
-
-                     
-                        // Ensure that result is not null
-                        if (result != null)
+                        if (result == null)
                         {
-                            foreach (ConsoleApp1.Models.GetUser user in result)
-                            {
-                                Console.WriteLine(user.Name);
-                            }
+                            Console.WriteLine("The result is null.");
+                            return;
                         }
 
-                        Console.WriteLine($"Returned result type: {result.GetType()}");
-                        Console.WriteLine("Result",result);
-
-                            List<ClassLibrary1.Model.GetUser>? getUsers = (List < ClassLibrary1.Model.GetUser > )result;
-                        List<ConsoleApp1.Models.GetUser> consoleAppModels = new List<ConsoleApp1.Models.GetUser>();
-                        // Check if the casting succeeded
-                        if (getUsers != null)
+                        if (result is IEnumerable users)
+                        {
+                            List<GetUser> userList = new List<GetUser>();
+                            foreach (var user in users)
                             {
-                                // Map List<ClassLibrary1.Model.GetUser> to List<ConsoleApp1.Models.GetUser>
-                                List<ConsoleApp1.Models.GetUser> users = getUsers.Select(g => new ConsoleApp1.Models.GetUser
-                                {
-                                    Id = g.Id,
-                                    Name = g.Name,
-                                    Email = g.Email
-                                }).ToList();
+                                var id = user.GetType().GetProperty("Id")?.GetValue(user);
+                                var name = user.GetType().GetProperty("Name")?.GetValue(user);
+                                var email = user.GetType().GetProperty("Email")?.GetValue(user);
 
-                                // Check if the list contains any users
-                                if (users.Count > 0)
+                                if (id != null && name != null)
                                 {
-                                    foreach (var user in users)
+                                    GetUser User = new GetUser()
                                     {
-                                        Console.WriteLine($"{user.Id}  {user.Name}  {user.Email}");
-                                    }
+
+                                        Id = (Guid)id,
+                                        Name = Convert.ToString(name),
+                                        Email = Convert.ToString(email)
+                                    };
+                                    userList.Add(User);
                                 }
                                 else
                                 {
-                                    Console.WriteLine("User not found.");
+                                    Console.WriteLine("Failed to retrieve property values.");
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Unable to cast the result to List<ClassLibrary1.Model.GetUser>.");
-                            }
-                       
-                    }
 
+
+                            }
+                            foreach (var user in userList)
+                            {
+                                Console.WriteLine($"ID: {user.Id}, Name: {user.Name}, Email:{user.Email}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("The result is not an IEnumerable.");
+                        }
+
+                    }
                     else
                     {
                         Console.WriteLine("Invalid option selected.");
                     }
 
-                    Console.WriteLine("Have to do more CRUD, press any letter");
-                    more = Console.ReadLine();
+                    Console.WriteLine();
+
                 }
-                while (more != null);
+                while (true);
 
 
             }
