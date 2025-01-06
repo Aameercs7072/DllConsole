@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ConsoleApp1.Models
 {
     public class GetUser
-    {
+    { 
         public Guid? Id { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
