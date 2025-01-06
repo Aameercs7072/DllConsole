@@ -24,13 +24,11 @@ namespace MathApp
             if (type != null)
             {
                 var obj = Activator.CreateInstance(type);
-
+                int option = 5;
 
                 do
                 {
-                    Console.WriteLine("Enter option");
-                    string? input = Console.ReadLine();  // Read the input as a string
-                    int option = Convert.ToInt32(input);
+                    
                     if (option == 1)
                     {
                         Console.WriteLine("Adduser");
@@ -315,7 +313,9 @@ namespace MathApp
                     }
 
                     Console.WriteLine();
-
+                    Console.WriteLine("Enter option");
+                    string? input = Console.ReadLine();  // Read the input as a string
+                    option = Convert.ToInt32(input);
                 }
                 while (true);
 
